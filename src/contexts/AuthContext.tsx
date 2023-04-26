@@ -2,6 +2,7 @@ import { ReactNode, createContext, useEffect, useState } from 'react'
 import { recoverUserInformation, signInRequest } from '~/services/auth'
 import { setCookie, parseCookies } from 'nookies'
 import Router from 'next/router'
+import { api } from '~/services/api'
 
 const COOKIE_TOKEN_NAME = 'nextauthjwt.token'
 
@@ -42,7 +43,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         setUser(responseUser)
       })
     }
-  })
+  }, [])
 
   const signIn = async ({ email, password }: SignInProps) => {
     const { token, user: signInUser } = await signInRequest({
@@ -53,6 +54,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setCookie(undefined, COOKIE_TOKEN_NAME, token, {
       maxAge: 60 * 60 * 1, // 1 hour
     })
+
+    api.defaults.headers['Authorization'] = `Bearer ${token}`
 
     setUser(signInUser)
 

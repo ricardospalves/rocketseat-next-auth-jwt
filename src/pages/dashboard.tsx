@@ -1,6 +1,9 @@
+import { GetServerSideProps } from 'next'
 import Head from 'next/head'
+import { parseCookies } from 'nookies'
 import { useContext } from 'react'
 import { AuthContext } from '~/contexts/AuthContext'
+import { getApiClient } from '~/services/apiClient'
 
 export default function Dashboard() {
   const { user } = useContext(AuthContext)
@@ -34,4 +37,24 @@ export default function Dashboard() {
       </div>
     </>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const apiClient = getApiClient(context)
+  const { 'nextauthjwt.token': token } = parseCookies(context)
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
+
+  await apiClient.get('/users')
+
+  return {
+    props: {},
+  }
 }
