@@ -1,8 +1,26 @@
 import Head from 'next/head'
+import { useContext } from 'react'
+import { useForm } from 'react-hook-form'
 import { Button } from '~/components/Button'
 import { TextField } from '~/components/TextField'
+import { AuthContext } from '~/contexts/AuthContext'
+
+type RegisterFields = {
+  email: string
+  password: string
+}
 
 export const Home = () => {
+  const { register, handleSubmit } = useForm<RegisterFields>()
+  const { signIn } = useContext(AuthContext)
+
+  const handleSignIn = async ({ email, password }: RegisterFields) => {
+    await signIn({
+      email,
+      password,
+    })
+  }
+
   return (
     <>
       <Head>
@@ -23,10 +41,22 @@ export const Home = () => {
             />
           </div>
 
-          <form className="max-w-md mx-auto">
+          <form
+            className="max-w-md mx-auto"
+            onSubmit={handleSubmit(handleSignIn)}
+          >
             <div className="grid gap-4 mb-4">
-              <TextField label="E-mail" inputMode="email" autoFocus />
-              <TextField label="Senha" type="password" />
+              <TextField
+                label="E-mail"
+                inputMode="email"
+                {...register('email')}
+                autoFocus
+              />
+              <TextField
+                label="Senha"
+                type="password"
+                {...register('password')}
+              />
             </div>
 
             <Button />
