@@ -1,3 +1,3 @@
-export default function Home() {
-  return <main>Next Auth</main>
-}
+import { Home } from '~/pageViewers/Home'
+
+export default Home
